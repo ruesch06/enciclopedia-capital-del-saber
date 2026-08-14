@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { BookOpen, Bookmark, ChevronRight } from 'lucide-react'
+import { BookOpen, ChevronRight } from 'lucide-react'
 
 export default function TomosList() {
   const tomos = [

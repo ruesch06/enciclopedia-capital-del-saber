@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
-import { Search, HelpCircle, ChevronRight, BookOpen } from 'lucide-react'
+import { Search, HelpCircle } from 'lucide-react'
 
 interface Termino {
   id: string

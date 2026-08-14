@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, Link, useSearchParams } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
-import { ChevronLeft, BookOpen, List, ChevronRight, Bookmark } from 'lucide-react'
+import { ChevronLeft, List, ChevronRight, Bookmark } from 'lucide-react'
 
 interface Tomo {
   id: string
@@ -27,6 +27,99 @@ interface Chapter {
   bloques: ChapterBlock[]
 }
 
+interface ImageData {
+  url: string
+  caption: string
+}
+
+// Mapeo dinámico de imágenes sugeridas para el Tomo 1
+const TOMO_IMAGES_MAP: Record<string, ImageData[]> = {
+  "1-1": [
+    { url: "/tomo1_pinturas_rupestres.jpg", caption: "Pinturas rupestres del Cerro Colorado: Detalle de aleros con figuras de guerreros, llamas y caballeros españoles." },
+    { url: "/tomo1_morteros_piedra.jpg", caption: "Morteros de roca granítica a la orilla del Río Suquía o en el Parque Sarmiento." },
+    { url: "/tomo1_poblado_henia_camiare.jpg", caption: "Ilustración: Reconstrucción de un poblado Hênîa-Câmîare en un valle serrano con familias." }
+  ],
+  "1-2": [
+    { url: "/tomo1_fundacion_cabrera.jpg", caption: "Fundación de Córdoba (6 de julio de 1573): Jerónimo Luis de Cabrera clavando la Picota en la orilla del río." }
+  ],
+  "1-3": [
+    { url: "/tomo1_recova_colonial.jpg", caption: "Ilustración: Escena en la Recova Colonial con pregoneros vendiendo agua y empanadas en la Plaza Mayor." },
+    { url: "/tomo1_catedral_fachada.jpg", caption: "Catedral de Córdoba: Vista de la fachada barroca y las torres campanario." },
+    { url: "/tomo1_cabildo_historico.jpg", caption: "Cabildo Histórico: Arcos de ladrillo sobre la Plaza San Martín." },
+    { url: "/tomo1_casona_sobremonte.jpg", caption: "Casona Patricia Colonial: Patio interno con aljibe (Museo Marqués de Sobremonte)." }
+  ],
+  "1-4": [
+    { url: "/tomo1_compania_jesus_boveda.jpg", caption: "Iglesia de la Compañía de Jesús: Techo de la nave con bóveda de madera en forma de casco de barco invertido." },
+    { url: "/tomo1_estancia_alta_gracia.jpg", caption: "Estancia Jesuítica de Alta Gracia: Vista de la residencia y el dique Tajamar." },
+    { url: "/tomo1_estancia_jesus_maria.jpg", caption: "Estancia de Jesús María: Bodega y molino colonial." }
+  ],
+  "1-5": [
+    { url: "/tomo1_patio_unc.jpg", caption: "Patio Rectoral de la UNC: Galería de arcos con la estatua de Fray Fernando de Trejo." },
+    { url: "/tomo1_imprenta_jesuitica.jpg", caption: "Imprenta Jesuítica de tipos móviles conservada en el Colegio de Monserrat." }
+  ],
+  "1-6": [
+    { url: "/tomo1_chasqui_1810.jpg", caption: "Ilustración: Llegada del Chasqui entregando las noticias de la Revolución de Mayo frente al Cabildo." },
+    { url: "/tomo1_tejedoras_1816.jpg", caption: "Ilustración: Mujeres tejiendo ponchos de lana para el Ejército de los Andes de San Martín." }
+  ],
+  "1-7": [
+    { url: "/tomo1_estacion_trenes_1880.jpg", caption: "Estación de Trenes (1880): Llegada del Ferrocarril Central Argentino a Córdoba." },
+    { url: "/tomo1_observatorio_1871.jpg", caption: "Observatorio Astronómico (1871): Torres y telescopios históricos en Barrio Observatorio." },
+    { url: "/tomo1_tranvia_sangre.jpg", caption: "Tranvía a sangre (1880): Vagones tirados por mulas en el microcentro." }
+  ],
+  "1-8": [
+    { url: "/tomo1_reforma_universitaria_1918.jpg", caption: "Reforma Universitaria (15 de junio de 1918): Estudiantes en los balcones y techos de la UNC." }
+  ],
+  "1-9": [
+    { url: "/tomo1_ika_cadena_montaje.jpg", caption: "Planta Santa Isabel (1960): Cadena de montaje de IKA ensamblando automóviles Torino." },
+    { url: "/tomo1_canalizacion_canada.jpg", caption: "La Cañada (1944-1948): Construcción del canal de hormigón y tipas." },
+    { url: "/tomo1_cordobazo_1969.jpg", caption: "El Cordobazo (29 de mayo de 1969): Marcha obrero-estudiantil en el centro." },
+    { url: "/tomo1_casa_giratoria.jpg", caption: "La Casa Giratoria de Abdón Sahade en su traslado histórico." }
+  ],
+  "1-10": [
+    { url: "/tomo1_faro_bicentenario.jpg", caption: "Panorámica desde el Faro del Bicentenario sobre Nueva Córdoba." },
+    { url: "/tomo1_trolebuses.jpg", caption: "Trolebuses de Córdoba: Vehículos eléctricos conducidos por mujeres." },
+    { url: "/tomo1_satelite_saocom.jpg", caption: "Satélite SAOCOM: Satélite científico de observación terrestre desarrollado por la CONAE." }
+  ]
+}
+
+// Componente premium para renderizar imágenes de variados tamaños y orientaciones
+function ImageFrame({ src, alt, caption }: { src: string; alt: string; caption?: string }) {
+  const [hasError, setHasError] = useState(false)
+
+  // Si no se encuentra la imagen en el directorio local, se oculta silenciosamente
+  if (hasError) return null
+
+  return (
+    <div className="space-y-2.5 max-w-2xl mx-auto my-8 animate-fadeIn">
+      {/* Contenedor con aspecto unificado y Blur-Mirror Frame */}
+      <div className="relative overflow-hidden aspect-video rounded-2xl border border-white/10 bg-black/60 shadow-xl group">
+        
+        {/* Fondo borroso (para rellenar márgenes de fotos verticales o cuadradas) */}
+        <img 
+          src={src} 
+          alt="" 
+          onError={() => setHasError(true)}
+          className="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-20 pointer-events-none"
+        />
+        
+        {/* Imagen nítida centrada en proporción real */}
+        <img 
+          src={src} 
+          alt={alt} 
+          onError={() => setHasError(true)}
+          className="absolute inset-0 w-full h-full object-contain p-3 z-10 transition-transform duration-500 group-hover:scale-[1.02]"
+        />
+      </div>
+      
+      {caption && (
+        <p className="text-xs text-gray-400 italic text-center px-6 leading-relaxed">
+          {caption}
+        </p>
+      )}
+    </div>
+  )
+}
+
 export default function TomoView() {
   const { id } = useParams<{ id: string }>()
   const tomoNumber = parseInt(id || '1')
@@ -35,14 +128,11 @@ export default function TomoView() {
 
   const [tomo, setTomo] = useState<Tomo | null>(null)
   const [chapters, setChapters] = useState<Chapter[]>([])
-  // Por defecto, -1 para mostrar el Índice General del Tomo primero
   const [activeChapterIndex, setActiveChapterIndex] = useState<number>(-1)
   const [loading, setLoading] = useState(true)
   
-  // Guardar la sección a la que queremos hacer scroll suave
   const [scrollToSectionText, setScrollToSectionText] = useState<string | null>(null)
 
-  // 1. Efecto para saltar al capítulo que contiene el término de búsqueda de la cronología
   useEffect(() => {
     if (chapters.length > 0 && buscar) {
       const cleanSearch = decodeURIComponent(buscar).toLowerCase()
@@ -65,7 +155,6 @@ export default function TomoView() {
     }
   }, [chapters, buscar])
 
-  // 2. Efecto para hacer scroll suave a la sección seleccionada y animarla con un pulso
   useEffect(() => {
     if (activeChapterIndex >= 0 && scrollToSectionText) {
       const timer = setTimeout(() => {
@@ -73,8 +162,6 @@ export default function TomoView() {
         for (const h of headers) {
           if (h.textContent?.toLowerCase().includes(scrollToSectionText.toLowerCase())) {
             h.scrollIntoView({ behavior: 'smooth', block: 'center' })
-            
-            // Efecto visual de pulso para resaltar
             h.classList.add('bg-amber-500/30', 'animate-pulse', 'rounded', 'px-2')
             setTimeout(() => {
               h.classList.remove('bg-amber-500/30', 'animate-pulse')
@@ -88,12 +175,10 @@ export default function TomoView() {
     }
   }, [activeChapterIndex, scrollToSectionText])
 
-  // 3. Obtener datos del Tomo y sus Capítulos
   useEffect(() => {
     async function fetchData() {
       setLoading(true)
       try {
-        // Obtener datos del Tomo
         const { data: tomoData, error: tomoError } = await supabase
           .from('tomos')
           .select('*')
@@ -104,7 +189,6 @@ export default function TomoView() {
         setTomo(tomoData)
 
         if (tomoData) {
-          // Obtener capítulos asociados
           const { data: capData, error: capError } = await supabase
             .from('capitulos')
             .select('*')
@@ -114,7 +198,6 @@ export default function TomoView() {
           if (capError) throw capError
           setChapters(capData || [])
           
-          // Si no hay búsqueda, mostramos el índice general
           if (!buscar) {
             setActiveChapterIndex(-1)
           }
@@ -150,7 +233,6 @@ export default function TomoView() {
     )
   }
 
-  // Helper para renderizar negritas, cursivas y resaltados de búsqueda
   const renderFormattedText = (
     text: string | undefined,
     search: string | null
@@ -194,7 +276,6 @@ export default function TomoView() {
 
   const activeChapter = activeChapterIndex >= 0 ? chapters[activeChapterIndex] : null
 
-  // Configuración de colores del tomo
   const themeColors: Record<string, string> = {
     amber: 'border-amber-500/30 text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 focus:border-amber-500',
     blue: 'border-blue-500/30 text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 text-blue-500 focus:border-blue-500',
@@ -205,7 +286,6 @@ export default function TomoView() {
 
   const activeThemeClass = themeColors[tomo.color_theme] || themeColors.amber
 
-  // Extraer todos los sub-títulos de un capítulo para navegación rápida
   const getChapterSections = (cap: Chapter) => {
     return cap.bloques
       ? cap.bloques.filter(b => b.type === 'titulo' && b.text).map(b => b.text as string)
@@ -213,15 +293,18 @@ export default function TomoView() {
   }
 
   const handleSelectSection = (chapterIdx: number, sectionText: string) => {
-    // Si ya estamos en el capítulo, hacemos scroll directo
     if (activeChapterIndex === chapterIdx) {
       setScrollToSectionText(sectionText)
     } else {
-      // Si no, cambiamos primero de capítulo y luego hacemos scroll
       setActiveChapterIndex(chapterIdx)
       setScrollToSectionText(sectionText)
     }
   }
+
+  // Obtener imágenes del capítulo activo
+  const activeChapterImages = activeChapter
+    ? TOMO_IMAGES_MAP[`${tomo.numero}-${activeChapter.orden}`] || []
+    : []
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-8 space-y-8 relative z-10">
@@ -251,11 +334,10 @@ export default function TomoView() {
               Navegación
             </h2>
             
-            {/* Botón de Índice General */}
             <button
               onClick={() => {
                 setActiveChapterIndex(-1)
-                setSearchParams({}) // Limpiar parámetros de búsqueda al ir al índice
+                setSearchParams({})
               }}
               className={`w-full flex items-center gap-2.5 px-4 py-3 rounded-xl transition-all border text-sm ${
                 activeChapterIndex === -1
@@ -273,7 +355,6 @@ export default function TomoView() {
               Capítulos
             </h2>
             
-            {/* Listado de Capítulos */}
             <div className="flex flex-row lg:flex-col overflow-x-auto lg:overflow-visible gap-2 pb-2 lg:pb-0 scrollbar-none">
               {chapters.map((cap, index) => {
                 const isSelected = activeChapterIndex === index
@@ -284,7 +365,7 @@ export default function TomoView() {
                     <button
                       onClick={() => {
                         setActiveChapterIndex(index)
-                        setSearchParams({}) // Limpiar parámetros
+                        setSearchParams({})
                       }}
                       className={`w-full text-left px-4 py-3 rounded-xl transition-all border ${
                         isSelected
@@ -300,7 +381,6 @@ export default function TomoView() {
                       </div>
                     </button>
                     
-                    {/* Sub-secciones expandidas (Árbol de navegación) */}
                     {isSelected && sections.length > 0 && (
                       <div className="hidden lg:block pl-4 pr-2 py-1 space-y-1 border-l border-gray-800 ml-4 animate-fadeIn">
                         {sections.map((sec, sIdx) => (
@@ -359,7 +439,6 @@ export default function TomoView() {
                       </button>
                     </div>
                     
-                    {/* Lista de secciones en el índice */}
                     {sections.length > 0 && (
                       <ul className="mt-4 pt-4 border-t border-gray-900 space-y-2 text-xs text-gray-400">
                         {sections.map((sec, sIdx) => (
@@ -395,7 +474,7 @@ export default function TomoView() {
                   </h2>
                 </div>
 
-                {/* Mini Tabla de Contenidos rápida en la parte superior */}
+                {/* Mini Tabla de Contenidos rápida */}
                 {getChapterSections(activeChapter).length > 0 && (
                   <div className="bg-gray-950/30 border border-white/5 rounded-xl p-4 mb-6">
                     <span className="text-[10px] font-bold text-gray-500 tracking-widest uppercase block mb-2">
@@ -452,6 +531,25 @@ export default function TomoView() {
                     <p className="text-gray-500 italic">No hay bloques de texto disponibles en este capítulo.</p>
                   )}
                 </div>
+
+                {/* 🖼️ Renderizar Galería Multimedia de forma premium al final del capítulo */}
+                {activeChapterImages.length > 0 && (
+                  <div className="mt-12 pt-8 border-t border-white/5 space-y-6">
+                    <h4 className="text-xs font-bold text-gray-500 tracking-widest uppercase mb-4">
+                      Galería Multimedia Ilustrativa
+                    </h4>
+                    <div className="space-y-8">
+                      {activeChapterImages.map((img, idx) => (
+                        <ImageFrame 
+                          key={idx}
+                          src={img.url}
+                          alt={img.caption}
+                          caption={img.caption}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
               </article>
             ) : null}
           </div>

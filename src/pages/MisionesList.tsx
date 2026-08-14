@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
-import { Award, Search, CheckCircle2, ChevronRight, BookOpen, Star } from 'lucide-react'
+import { Award, Search, CheckCircle2, ChevronRight, BookOpen } from 'lucide-react'
 
 interface Actividad {
   id: string
