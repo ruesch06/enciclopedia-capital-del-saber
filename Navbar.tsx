@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import { BookOpen, Award, Search, Users, Home, GraduationCap, Trophy, Calendar, MapPin } from 'lucide-react'
+import { BookOpen, Award, Search, Users, Home, GraduationCap, Trophy, Calendar, MapPin, RefreshCw } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 export default function Navbar() {
@@ -23,6 +23,18 @@ export default function Navbar() {
       clearInterval(interval)
     }
   }, [])
+
+  const handleResetProgress = () => {
+    if (window.confirm('¿Estás seguro de que querés reiniciar todo tu progreso (puntos, medallas y desafíos de campo) a cero?')) {
+      localStorage.removeItem('user_score')
+      localStorage.removeItem('completed_missions')
+      localStorage.removeItem('completed_field_challenges')
+      // Disparar evento
+      window.dispatchEvent(new Event('score-updated'))
+      // Recargar página
+      window.location.reload()
+    }
+  }
 
   const navItems = [
     { path: '/', label: 'Inicio', icon: Home },
@@ -76,9 +88,19 @@ export default function Navbar() {
           </div>
 
           {/* Puntaje del Estudiante */}
-          <div className="flex items-center gap-1.5 bg-amber-500/10 border border-amber-500/20 px-4 py-2 rounded-full text-amber-400 font-extrabold text-sm shadow-md animate-pulse">
-            <Trophy className="h-4 w-4 text-amber-400" />
-            <span>{score} PTS</span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 bg-amber-500/10 border border-amber-500/20 px-4 py-2 rounded-full text-amber-400 font-extrabold text-sm shadow-md animate-pulse">
+              <Trophy className="h-4 w-4 text-amber-400" />
+              <span>{score} PTS</span>
+            </div>
+            
+            <button
+              onClick={handleResetProgress}
+              title="Reiniciar Progreso a 0"
+              className="p-2 hover:bg-red-500/10 text-gray-500 hover:text-red-400 border border-transparent hover:border-red-500/20 rounded-full transition-all"
+            >
+              <RefreshCw className="h-4 w-4" />
+            </button>
           </div>
         </div>
       </div>
