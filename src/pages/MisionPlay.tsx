@@ -67,6 +67,16 @@ export default function MisionPlay() {
   const animationRef = useRef<number | null>(null)
   const particles = useRef<Particle[]>([])
 
+  // Helper para mezclar las opciones en orden aleatorio
+  const shuffleArray = <T,>(array: T[]): T[] => {
+    const arr = [...array]
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]]
+    }
+    return arr
+  }
+
   useEffect(() => {
     async function fetchMisionData() {
       if (!id) return
@@ -87,7 +97,14 @@ export default function MisionPlay() {
           .eq('actividad_id', id)
 
         if (qError) throw qError
-        setPreguntas(qData || [])
+        
+        // Mezclar las opciones de cada pregunta para que no queden siempre en la misma posición (A)
+        const shuffledQuestions = (qData || []).map(q => ({
+          ...q,
+          opciones: q.opciones ? shuffleArray(q.opciones) : []
+        }))
+        
+        setPreguntas(shuffledQuestions)
       } catch (err) {
         console.error('Error cargando la partida:', err)
       } finally {
