@@ -8,6 +8,7 @@ import MisionPlay from './pages/MisionPlay'
 import PersonajesList from './pages/PersonajesList'
 import GlosarioView from './pages/GlosarioView'
 import Cronologia from './pages/Cronologia'
+import InvestigacionesList from './pages/InvestigacionesList'
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
             <Route path="/misiones/:id" element={<MisionPlay />} />
             <Route path="/personajes" element={<PersonajesList />} />
             <Route path="/glosario" element={<GlosarioView />} />
+            <Route path="/investigaciones" element={<InvestigacionesList />} />
             <Route path="*" element={
               <div className="max-w-md mx-auto text-center py-16 space-y-4">
                 <h2 className="text-2xl font-bold text-white">Página no encontrada</h2>
