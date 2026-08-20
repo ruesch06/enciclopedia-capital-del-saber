@@ -52,7 +52,7 @@ export default function Home() {
       {/* Hero Section */}
       <div className="text-center max-w-3xl mx-auto space-y-6 animate-fade-in-up bg-black/20 backdrop-blur-md p-8 rounded-3xl border border-white/5 shadow-2xl">
         <span className="bg-amber-500/10 text-amber-400 border border-amber-500/20 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest">
-          Plataforma Educativa Oficial
+          Plataforma Educativa
         </span>
         <h1 className="text-4xl md:text-6xl font-extrabold font-display leading-tight text-white m-0">
           Córdoba Capital <br className="hidden sm:inline" />
