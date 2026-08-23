@@ -32,8 +32,9 @@ interface ImageData {
   caption: string
 }
 
-// Mapeo dinámico de imágenes sugeridas para el Tomo 1
+// Mapeo dinámico de imágenes sugeridas para todos los Tomos
 const TOMO_IMAGES_MAP: Record<string, ImageData[]> = {
+  // TOMO I: Historia
   "1-1": [
     { url: "/tomo1_pinturas_rupestres.jpg", caption: "Pinturas rupestres del Cerro Colorado: Detalle de aleros con figuras de guerreros, llamas y caballeros españoles." },
     { url: "/tomo1_morteros_piedra.jpg", caption: "Morteros de roca granítica a la orilla del Río Suquía o en el Parque Sarmiento." },
@@ -79,6 +80,133 @@ const TOMO_IMAGES_MAP: Record<string, ImageData[]> = {
     { url: "/tomo1_faro_bicentenario.jpg", caption: "Panorámica desde el Faro del Bicentenario sobre Nueva Córdoba." },
     { url: "/tomo1_trolebuses.jpg", caption: "Trolebuses de Córdoba: Vehículos eléctricos conducidos por mujeres." },
     { url: "/tomo1_satelite_saocom.jpg", caption: "Satélite SAOCOM: Satélite científico de observación terrestre desarrollado por la CONAE." }
+  ],
+
+  // TOMO II: Patrimonio y Arquitectura
+  "2-1": [
+    { url: "/tomo2_plaza_san_martin.jpg", caption: "Plaza San Martín: Vista del monumento ecuestre del Gral. San Martín y los plátanos centenarios." },
+    { url: "/tomo2_cabildo_patio.jpg", caption: "Patio interno del Cabildo Histórico con sus arcadas y muros de piedra colonial." }
+  ],
+  "2-2": [
+    { url: "/tomo2_catedral_interior.jpg", caption: "Interior de la Catedral de Córdoba: Detalle del altar mayor elaborado en plata maciza y la nave central." },
+    { url: "/tomo2_compania_boveda.jpg", caption: "Bóveda de la Compañía de Jesús: Techo de madera de cedro paraguayo ensamblado con forma de casco de barco invertido." },
+    { url: "/tomo2_colegio_monserrat.jpg", caption: "Colegio Nacional de Monserrat: Patio de claustros y la icónica Torre del Reloj." },
+    { url: "/tomo2_cripta_jesuitica.jpg", caption: "Cripta Jesuítica: Antigua galería subterránea de ladrillo y arcos de piedra redescubierta bajo la calzada." }
+  ],
+  "2-3": [
+    { url: "/tomo2_palacio_ferreyra.jpg", caption: "Palacio Ferreyra (Museo Evita): Imponente fachada neoclásica de estilo Belle Époque francés de principios de siglo XX." },
+    { url: "/tomo2_museo_caraffa.jpg", caption: "Museo Provincial de Bellas Artes Emilio Caraffa: Fachada clásica original conectada con ampliaciones de vidrio y acero modernas." },
+    { url: "/tomo2_buen_pastor_noche.jpg", caption: "Paseo del Buen Pastor: Espectáculo nocturno de aguas danzantes con la Capilla de fondo." }
+  ],
+  "2-4": [
+    { url: "/tomo2_teatro_libertador.jpg", caption: "Teatro del Libertador General San Martín: Vista del escenario principal y los palcos con terciopelo rojo." },
+    { url: "/tomo2_observatorio.jpg", caption: "Observatorio Astronómico de Córdoba: Edificio central con sus cúpulas metálicas y telescopios." }
+  ],
+  "2-5": [
+    { url: "/tomo2_la_canada.jpg", caption: "Paseo de la Cañada: Balaustradas de piedra rústica y el túnel verde formado por las copas de las tipas." },
+    { url: "/tomo2_puente_centenario.jpg", caption: "Puente Centenario: Estructura de hormigón que cruza el cauce del Río Suquía." }
+  ],
+  "2-6": [
+    { url: "/tomo2_parque_sarmiento.jpg", caption: "Parque Sarmiento: Vista del lago artificial y el Faro del Bicentenario." },
+    { url: "/tomo2_el_panal.jpg", caption: "Centro Cívico (El Panal): Edificio gubernamental vanguardista con su fachada de figuras geométricas romboidales." }
+  ],
+  "2-7": [
+    { url: "/tomo2_mercado_norte.jpg", caption: "Mercado Norte: Nave central con puestos tradicionales de carnes, verduras y comidas típicas." },
+    { url: "/tomo2_cementerio_san_jeronimo.jpg", caption: "Cementerio San Jerónimo: Portón de ingreso neoclásico y senderos de mausoleos históricos." },
+    { url: "/tomo2_barrio_guemes.jpg", caption: "Paseo de las Artes: Feria de artesanos y locales gastronómicos en las calles empedradas de Barrio Güemes." },
+    { url: "/tomo2_alta_cordoba.jpg", caption: "Barrio Alta Córdoba: Estación de trenes Belgrano y antiguas casonas de estilo inglés." },
+    { url: "/tomo2_cpc_arguello.jpg", caption: "CPC de Argüello: Diseño arquitectónico moderno de Miguel Ángel Roca con conos y columnas de colores." },
+    { url: "/tomo2_museo_ciencias_naturales.jpg", caption: "Museo de Ciencias Naturales: Rampa helicoidal de exposición donde se aprecian réplicas de megafauna local." }
+  ],
+
+  // TOMO III: Cultura, Naturaleza y Tradiciones
+  "3-1": [
+    { url: "/tomo3_cerro_champaqui.jpg", caption: "Cerro Champaquí: Vista panorámica desde la cumbre más alta de la provincia y la Pampa de Achala." },
+    { url: "/tomo3_rios_cordobeses.jpg", caption: "Ríos de las sierras de Córdoba: Aguas claras y ollas de piedra en ríos serranos." }
+  ],
+  "3-2": [
+    { url: "/tomo3_reserva_natural_urbana.jpg", caption: "Reserva Natural Urbana San Martín: Sendero interpretativo rodeado de bosque nativo de Espinal." },
+    { url: "/tomo3_fauna_autoctona.jpg", caption: "Fauna e infografía autóctona: El zorro gris, el cóndor andino y plantas serranas de peperina." }
+  ],
+  "3-3": [
+    { url: "/tomo3_revista_hortensia.jpg", caption: "Revista Hortensia: Edición histórica de la revista cordobesa que retrató el humor y la picardía local." }
+  ],
+  "3-4": [
+    { url: "/tomo3_estatua_marzano.jpg", caption: "Leonor Marzano: Estatua de bronce en honor a la creadora del característico ritmo del cuarteto cordobés." },
+    { url: "/tomo3_bailes_cuarteto.jpg", caption: "Baile popular de cuarteto: La Mona Jiménez cantando frente a miles de personas en un show en vivo." }
+  ],
+  "3-5": [
+    { url: "/tomo3_platos_tipicos.jpg", caption: "Comidas tradicionales cordobesas: Locro criollo bien pulsudo, empanadas y el clásico lomito cordobés." },
+    { url: "/tomo3_alfajor_cordobes.jpg", caption: "Alfajor cordobés: Masa suave glaseada y relleno tradicional de dulce de leche o dulce de frutas serranas." },
+    { url: "/tomo3_chacineria_caroya.jpg", caption: "Sótano de maduración: Salames caseros de Colonia Caroya colgados bajo condiciones artesanales." }
+  ],
+  "3-6": [
+    { url: "/tomo3_cura_brochero.jpg", caption: "San José Gabriel Brochero (el cura gaucho): Monumento en Traslasierra recordando su labor social a caballo." },
+    { url: "/tomo3_cerro_uritorco.jpg", caption: "Cerro Uritorco: Vista nocturna del místico cerro en las afueras de Capilla del Monte." }
+  ],
+  "3-7": [
+    { url: "/tomo3_estadio_kempes.jpg", caption: "Estadio Mario Alberto Kempes: Vista aérea del imponente coliseo deportivo cordobés colmado de público." },
+    { url: "/tomo3_atenas_basquet.jpg", caption: "Asociación Deportiva Atenas: Festejos del histórico equipo con Marcelo Milanesio levantando la copa." }
+  ],
+  "3-8": [
+    { url: "/tomo3_cine_club_hugo_del_carril.jpg", caption: "Cine Club Municipal Hugo del Carril: Fachada de la institución impulsora del cine alternativo en la ciudad." },
+    { url: "/tomo3_cuadros_fader.jpg", caption: "Pintura de Fernando Fader: Los paisajes de Loza Corral plasmados en óleos del célebre artista impresionista." }
+  ],
+  "3-10": [
+    { url: "/tomo3_carnavales_san_vicente.jpg", caption: "Carnavales de San Vicente: Desfile tradicional de comparsas, murgas y disfraces coloridos." },
+    { url: "/tomo3_pena_folklorica.jpg", caption: "Peña folklórica: Bailarines danzando chacarera al compás de guitarras y el bombo legüero." }
+  ],
+
+  // TOMO IV: Ciencia, Industria y Futuro
+  "4-1": [
+    { url: "/tomo4_pabellon_argentina_unc.jpg", caption: "Pabellón Argentina (UNC): Fachada principal y escalinatas del edificio central de la Ciudad Universitaria." }
+  ],
+  "4-2": [
+    { url: "/tomo4_academia_ciencias.jpg", caption: "Academia Nacional de Ciencias: Histórico Salón de Honor neoclásico inaugurado bajo la presidencia de Sarmiento." },
+    { url: "/tomo4_laboratorios_conicet.jpg", caption: "Laboratorio científico de Córdoba: Investigadores trabajando con microscopios y cultivos moleculares en el CONICET." }
+  ],
+  "4-3": [
+    { url: "/tomo4_bosque_alegre.jpg", caption: "Estación Astrofísica de Bosque Alegre: Gran cúpula del telescopio reflector enclavada en las Sierras Chicas." },
+    { url: "/tomo4_avion_pampa_fadea.jpg", caption: "Avión IA-63 Pampa III: Aeronave militar de entrenamiento y ataque ligero de diseño nacional fabricada por FAdeA." },
+    { url: "/tomo4_conae_antenas.jpg", caption: "Centro Espacial Teófilo Tabanera (CONAE): Antenas satelitales gigantes que procesan imágenes de la Tierra en Falda del Cañete." }
+  ],
+  "4-4": [
+    { url: "/tomo4_renault_santa_isabel.jpg", caption: "Fábrica Renault de Santa Isabel: Línea moderna automatizada de ensamble con robots industriales para camionetas." },
+    { url: "/tomo4_fiat_ferreyra.jpg", caption: "Fábrica FIAT Ferreyra: Producción en serie de carrocerías del modelo Fiat Cronos, el auto más vendido del país." },
+    { url: "/tomo4_volkswagen_cordoba.jpg", caption: "Volkswagen Centro Industrial Córdoba: Ensamblaje robótico de transmisiones automáticas para exportación mundial." }
+  ],
+  "4-5": [
+    { url: "/tomo4_oficinas_software.jpg", caption: "Polo Tecnológico de Córdoba: Jóvenes profesionales programando en oficinas modernas de desarrollo de software." }
+  ],
+  "4-6": [
+    { url: "/tomo4_patio_olmos.jpg", caption: "Patio Olmos Shopping: Fachada de arquitectura monumental iluminada de noche en la intersección de Vélez Sarsfield y San Juan." }
+  ],
+  "4-7": [
+    { url: "/tomo4_palacio_municipal.jpg", caption: "Palacio Municipal 6 de Julio: Ejemplar de arquitectura pública brutalista de hormigón a la vista frente al Paseo de la Plaza de la Intendencia." },
+    { url: "/tomo4_nueva_legislatura.jpg", caption: "Nueva Legislatura Unicameral de Córdoba: Edificación moderna de cristal y vigas de acero en las inmediaciones del río." }
+  ],
+  "4-8": [
+    { url: "/tomo4_trolebus_electrico.jpg", caption: "Trolebús de Córdoba: Unidad eléctrica moderna de color rojo y blanco conectada a la red aérea de cables." }
+  ],
+  "4-10": [
+    { url: "/tomo4_bajo_grande.jpg", caption: "Planta de Tratamiento de Bajo Grande: Grandes tanques sedimentadores y piletones de tratamiento biológico de líquidos cloacales." },
+    { url: "/tomo4_centros_verdes.jpg", caption: "Centro Verde del Municipio: Operarios de cooperativas ambientales clasificando plásticos, vidrios y metales para reciclaje de economía circular." }
+  ],
+
+  // TOMO V: Cartografía y Cierre
+  "5-1": [
+    { url: "/tomo5_mapa_mudo_provincia.jpg", caption: "Mapa mudo de la Provincia de Córdoba: Base geográfica para identificar límites, departamentos y relieve serrano." },
+    { url: "/tomo5_mapa_mudo_centro.jpg", caption: "Mapa mudo del microcentro cordobés: Trazado en damero para localizar iglesias, museos y edificios históricos." },
+    { url: "/tomo5_mapa_mudo_estancias.jpg", caption: "Mapa de las Estancias Jesuíticas: Ubicación geográfica de los cinco núcleos productivos coloniales y la Manzana Jesuítica." }
+  ],
+  "5-3": [
+    { url: "/tomo5_comparativa_barroco.jpg", caption: "Estilo Barroco Colonial: Detalle ornamental y cúpula de la Catedral y la Compañía de Jesús." },
+    { url: "/tomo5_comparativa_belle_epoque.jpg", caption: "Estilo Belle Époque: Fachada e interiores inspirados en los palacios franceses del Palacio Ferreyra." },
+    { url: "/tomo5_comparativa_neogótico.jpg", caption: "Estilo Neogótico: Agujas y torres caladas inspiradas en las catedrales medievales de la Iglesia de los Capuchinos." },
+    { url: "/tomo5_comparativa_brutalismo.jpg", caption: "Estilo Brutalismo: Formas geométricas masivas de hormigón del Palacio Municipal de Córdoba." }
+  ],
+  "5-4": [
+    { url: "/tomo5_faro_bicentenario_simbolo.jpg", caption: "Faro del Bicentenario: Monumento urbano helicoidal erigido como ícono contemporáneo en el Parque Sarmiento." }
   ]
 }
 
