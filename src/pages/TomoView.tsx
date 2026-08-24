@@ -17,6 +17,12 @@ interface ChapterBlock {
   text?: string
   level?: number
   title?: string
+  // Pregunta interactiva (Tomo V)
+  pregunta?: string
+  opciones?: string[]
+  respuesta_correcta?: string
+  xp?: number
+  explicacion?: string
 }
 
 interface Chapter {
@@ -261,6 +267,13 @@ export default function TomoView() {
   const [loading, setLoading] = useState(true)
   
   const [scrollToSectionText, setScrollToSectionText] = useState<string | null>(null)
+  const [questionStates, setQuestionStates] = useState<Record<string, {selected: string | null, revealed: boolean}>>({})
+
+  const getQState = (key: string) => questionStates[key] || {selected: null, revealed: false}
+  const selectOpt = (key: string, letter: string) =>
+    setQuestionStates(prev => ({...prev, [key]: {...(prev[key] || {selected: null, revealed: false}), selected: letter}}))
+  const revealAns = (key: string) =>
+    setQuestionStates(prev => ({...prev, [key]: {...(prev[key] || {selected: null, revealed: false}), revealed: true}}))
 
 
   useEffect(() => {
@@ -637,6 +650,96 @@ export default function TomoView() {
                           >
                             {renderFormattedText(bloque.text, buscar)}
                           </h3>
+                        )
+                      } else if (bloque.type === 'pregunta') {
+                        const qKey = `${activeChapterIndex}-${index}`
+                        const qState = getQState(qKey)
+                        const opciones = bloque.opciones || []
+                        const respuesta = (bloque.respuesta_correcta || 'A').toUpperCase()
+                        const xp = bloque.xp || 100
+
+                        return (
+                          <div key={index} className="border border-amber-500/20 bg-amber-500/5 rounded-2xl p-5 my-6 space-y-4 shadow-lg">
+                            {/* Encabezado del desafío */}
+                            <div className="flex items-center gap-2">
+                              <Bookmark className="h-4 w-4 text-amber-400 flex-shrink-0" />
+                              <h4 className="text-xs font-bold text-amber-400 tracking-wider uppercase">
+                                {renderFormattedText(bloque.title || 'Desafío', buscar)}
+                              </h4>
+                            </div>
+
+                            {/* Enunciado */}
+                            <p className="text-sm text-gray-200 font-medium leading-relaxed">
+                              {renderFormattedText(bloque.pregunta || '', buscar)}
+                            </p>
+
+                            {/* Opciones clickeables */}
+                            <div className="space-y-2">
+                              {opciones.map((opt, optIdx) => {
+                                const letter = opt.charAt(0).toUpperCase()
+                                const texto = opt.slice(2).trim()
+                                const isSelected = qState.selected === letter
+                                const isCorrect = letter === respuesta
+                                const showResult = qState.revealed
+
+                                let cls = "w-full flex items-center gap-3 p-3 rounded-xl border text-sm text-left transition-all "
+                                if (!showResult) {
+                                  cls += isSelected
+                                    ? "border-amber-500/60 bg-amber-500/15 text-amber-200 font-medium"
+                                    : "border-white/10 bg-white/5 text-gray-300 hover:border-amber-500/40 hover:bg-amber-500/5 cursor-pointer"
+                                } else {
+                                  if (isCorrect) cls += "border-green-500/50 bg-green-500/10 text-green-300"
+                                  else if (isSelected) cls += "border-red-500/40 bg-red-500/10 text-red-300"
+                                  else cls += "border-white/5 bg-transparent text-gray-600 opacity-60"
+                                }
+
+                                return (
+                                  <button
+                                    key={optIdx}
+                                    onClick={() => !qState.revealed && selectOpt(qKey, letter)}
+                                    disabled={qState.revealed}
+                                    className={cls}
+                                  >
+                                    <span className={`w-7 h-7 rounded-full border-2 flex items-center justify-center text-xs font-bold flex-shrink-0 transition-colors ${
+                                      showResult && isCorrect ? 'border-green-400 text-green-400 bg-green-500/10' :
+                                      showResult && isSelected && !isCorrect ? 'border-red-400 text-red-400 bg-red-500/10' :
+                                      isSelected ? 'border-amber-400 text-amber-400 bg-amber-500/10' :
+                                      'border-gray-600 text-gray-500'
+                                    }`}>
+                                      {showResult && isCorrect ? '✓' : showResult && isSelected && !isCorrect ? '✗' : letter}
+                                    </span>
+                                    <span>{renderFormattedText(texto, buscar)}</span>
+                                  </button>
+                                )
+                              })}
+                            </div>
+
+                            {/* Botón revelar */}
+                            {!qState.revealed && (
+                              <button
+                                onClick={() => revealAns(qKey)}
+                                className="w-full py-2.5 px-4 rounded-xl bg-gray-950/60 border border-amber-500/30 text-amber-400 text-xs font-bold tracking-wider uppercase hover:bg-amber-500/10 hover:border-amber-500/60 transition-all flex items-center justify-center gap-2"
+                              >
+                                🔓 Revelar Respuesta
+                              </button>
+                            )}
+
+                            {/* Resultado revelado */}
+                            {qState.revealed && (
+                              <div className="bg-gray-950/60 border border-green-500/20 rounded-xl p-4 space-y-1.5">
+                                <p className="text-sm font-bold text-green-400 flex items-center gap-2">
+                                  <span>✓</span>
+                                  <span>Respuesta Correcta: {respuesta} · +{xp} XP</span>
+                                </p>
+                                {bloque.explicacion && (
+                                  <p className="text-xs text-gray-300 leading-relaxed">
+                                    <span className="font-bold text-amber-400">Explicación: </span>
+                                    {renderFormattedText(bloque.explicacion, buscar)}
+                                  </p>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         )
                       } else if (bloque.type === 'curiosidad') {
                         const hasDetails = bloque.text && bloque.text.includes('<details>')
