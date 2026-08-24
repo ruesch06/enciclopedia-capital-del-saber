@@ -2,15 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { useParams, Link, useSearchParams } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import { ChevronLeft, List, ChevronRight, Bookmark } from 'lucide-react'
-import capitulosEditadosRaw from '../data/capitulos_editados.json'
-
-interface EditedChapter {
-  titulo: string
-  subtitulo: string
-  bloques: ChapterBlock[]
-}
-
-const capitulosEditados = capitulosEditadosRaw as Record<string, EditedChapter>
 
 
 interface Tomo {
@@ -270,7 +261,6 @@ export default function TomoView() {
   const [loading, setLoading] = useState(true)
   
   const [scrollToSectionText, setScrollToSectionText] = useState<string | null>(null)
-  const [viewMode, setViewMode] = useState<'original' | 'edited'>('original')
 
 
   useEffect(() => {
@@ -415,20 +405,6 @@ export default function TomoView() {
   }
 
   const activeChapter = activeChapterIndex >= 0 ? chapters[activeChapterIndex] : null
-  const activeChapterKey = activeChapter ? `${tomo.numero}-${activeChapter.orden}` : ''
-  const hasEditedVersion = !!capitulosEditados[activeChapterKey]
-
-  const currentChapterTitle = (viewMode === 'edited' && hasEditedVersion)
-    ? capitulosEditados[activeChapterKey].titulo
-    : (activeChapter ? activeChapter.titulo : '')
-
-  const currentChapterSubtitle = (viewMode === 'edited' && hasEditedVersion)
-    ? capitulosEditados[activeChapterKey].subtitulo
-    : (activeChapter ? activeChapter.subtitulo : '')
-
-  const currentChapterBlocks = (viewMode === 'edited' && hasEditedVersion)
-    ? capitulosEditados[activeChapterKey].bloques
-    : (activeChapter ? activeChapter.bloques : [])
 
   const themeColors: Record<string, string> = {
     amber: 'border-amber-500/30 text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 focus:border-amber-500',
@@ -441,12 +417,8 @@ export default function TomoView() {
   const activeThemeClass = themeColors[tomo.color_theme] || themeColors.amber
 
   const getChapterSections = (cap: Chapter) => {
-    const key = `${tomo.numero}-${cap.orden}`
-    const blocks = (viewMode === 'edited' && capitulosEditados[key])
-      ? capitulosEditados[key].bloques
-      : cap.bloques
-    return blocks
-      ? blocks.filter(b => b.type === 'titulo' && b.text).map(b => b.text as string)
+    return cap.bloques
+      ? cap.bloques.filter(b => b.type === 'titulo' && b.text).map(b => b.text as string)
       : []
   }
 
@@ -623,41 +595,12 @@ export default function TomoView() {
             {activeChapter ? (
               <article className="space-y-6">
                 {/* Encabezado del Capítulo */}
-                <div className="space-y-4 border-b border-white/5 pb-6">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <span className="text-xs font-bold text-amber-500 tracking-wide uppercase">
-                      Lectura del Capítulo {activeChapter.orden}
-                    </span>
-                    
-                    {/* Toggle de versión original vs editada */}
-                    {hasEditedVersion && (
-                      <div className="flex bg-gray-950/60 p-1 rounded-xl border border-white/5 self-start sm:self-auto shadow-inner">
-                        <button
-                          onClick={() => setViewMode('original')}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                            viewMode === 'original'
-                              ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                              : 'text-gray-400 hover:text-white border border-transparent'
-                          }`}
-                        >
-                          Versión Original
-                        </button>
-                        <button
-                          onClick={() => setViewMode('edited')}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                            viewMode === 'edited'
-                              ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                              : 'text-gray-400 hover:text-white border border-transparent'
-                          }`}
-                        >
-                          Versión Editada (Piloto)
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                  
+                <div className="space-y-2 border-b border-white/5 pb-6">
+                  <span className="text-xs font-bold text-amber-500 tracking-wide uppercase">
+                    Lectura del Capítulo {activeChapter.orden}
+                  </span>
                   <h2 className="text-2xl sm:text-3xl font-extrabold font-display text-white m-0">
-                    {renderFormattedText(currentChapterSubtitle || currentChapterTitle, buscar)}
+                    {renderFormattedText(activeChapter.subtitulo || activeChapter.titulo, buscar)}
                   </h2>
                 </div>
 
@@ -683,8 +626,9 @@ export default function TomoView() {
 
                 {/* Bloques de contenido */}
                 <div className="space-y-6 text-gray-300 leading-relaxed font-sans text-base">
-                  {currentChapterBlocks && currentChapterBlocks.length > 0 ? (
-                    currentChapterBlocks.map((bloque, index) => {
+                  {activeChapter.bloques && activeChapter.bloques.length > 0 ? (
+                    activeChapter.bloques.map((bloque, index) => {
+
                       if (bloque.type === 'titulo') {
                         return (
                           <h3 
@@ -695,13 +639,56 @@ export default function TomoView() {
                           </h3>
                         )
                       } else if (bloque.type === 'curiosidad') {
+                        const hasDetails = bloque.text && bloque.text.includes('<details>')
+                        if (hasDetails) {
+                          const detailsRegex = /<details>([\s\S]*?)<\/details>/i
+                          const summaryRegex = /<summary>([\s\S]*?)<\/summary>/i
+                          
+                          const detailsMatch = bloque.text.match(detailsRegex)
+                          const rawDetails = detailsMatch ? detailsMatch[1] : ""
+                          
+                          const summaryMatch = rawDetails.match(summaryRegex)
+                          const summaryText = summaryMatch ? summaryMatch[1].replace(/<\/?[^>]+(>|$)/g, "").trim() : "🔒 REVELAR RESPUESTA Y PUNTOS XP"
+                          
+                          const detailsContent = rawDetails.replace(summaryRegex, "").trim()
+                          const mainText = bloque.text.replace(detailsRegex, "").trim()
+                          
+                          const formatCheckboxes = (txt: string) => {
+                            return txt.replace(/- \[\s*\]/g, '☐').replace(/- \[x\]/g, '☑')
+                          }
+                          
+                          return (
+                            <div key={index} className="bg-amber-500/5 border-l-4 border-amber-500 p-5 rounded-r-xl my-6 space-y-3 shadow-sm">
+                              <h4 className="text-xs font-bold text-amber-400 tracking-wider uppercase flex items-center gap-1.5">
+                                <Bookmark className="h-3.5 w-3.5" />
+                                <span>{renderFormattedText(bloque.title || 'Desafío', buscar)}</span>
+                              </h4>
+                              <div className="text-sm text-gray-300 m-0 leading-relaxed whitespace-pre-line font-sans">
+                                {renderFormattedText(formatCheckboxes(mainText), buscar)}
+                              </div>
+                              
+                              <details className="mt-4 bg-gray-950/60 border border-white/5 rounded-xl overflow-hidden transition-all group">
+                                <summary className="px-4 py-3 font-bold text-xs text-amber-400 hover:text-amber-300 cursor-pointer list-none flex items-center justify-between select-none">
+                                  <span className="flex items-center gap-2">
+                                    <span>{summaryText}</span>
+                                  </span>
+                                  <span className="text-[10px] text-gray-500 group-open:rotate-180 transition-transform">▼</span>
+                                </summary>
+                                <div className="px-4 pb-4 pt-2 text-sm text-gray-300 border-t border-white/5 bg-black/20 whitespace-pre-line">
+                                  {renderFormattedText(detailsContent, buscar)}
+                                </div>
+                              </details>
+                            </div>
+                          )
+                        }
+                        
                         return (
                           <div key={index} className="bg-amber-500/5 border-l-4 border-amber-500 p-5 rounded-r-xl my-6 space-y-1 shadow-sm">
                             <h4 className="text-xs font-bold text-amber-400 tracking-wider uppercase flex items-center gap-1.5">
                               <Bookmark className="h-3.5 w-3.5" />
                               <span>{renderFormattedText(bloque.title || 'Sabías que...', buscar)}</span>
                             </h4>
-                            <p className="text-sm text-gray-300 m-0 leading-relaxed">
+                            <p className="text-sm text-gray-300 m-0 leading-relaxed whitespace-pre-line font-sans">
                               {renderFormattedText(bloque.text, buscar)}
                             </p>
                           </div>
