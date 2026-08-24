@@ -742,19 +742,20 @@ export default function TomoView() {
                           </div>
                         )
                       } else if (bloque.type === 'curiosidad') {
-                        const hasDetails = bloque.text && bloque.text.includes('<details>')
+                        const blockText = bloque.text || ""
+                        const hasDetails = blockText.includes('<details>')
                         if (hasDetails) {
                           const detailsRegex = /<details>([\s\S]*?)<\/details>/i
                           const summaryRegex = /<summary>([\s\S]*?)<\/summary>/i
                           
-                          const detailsMatch = bloque.text.match(detailsRegex)
+                          const detailsMatch = blockText.match(detailsRegex)
                           const rawDetails = detailsMatch ? detailsMatch[1] : ""
                           
                           const summaryMatch = rawDetails.match(summaryRegex)
                           const summaryText = summaryMatch ? summaryMatch[1].replace(/<\/?[^>]+(>|$)/g, "").trim() : "🔒 REVELAR RESPUESTA Y PUNTOS XP"
                           
                           const detailsContent = rawDetails.replace(summaryRegex, "").trim()
-                          const mainText = bloque.text.replace(detailsRegex, "").trim()
+                          const mainText = blockText.replace(detailsRegex, "").trim()
                           
                           const formatCheckboxes = (txt: string) => {
                             return txt.replace(/- \[\s*\]/g, '☐').replace(/- \[x\]/g, '☑')
@@ -792,7 +793,7 @@ export default function TomoView() {
                               <span>{renderFormattedText(bloque.title || 'Sabías que...', buscar)}</span>
                             </h4>
                             <p className="text-sm text-gray-300 m-0 leading-relaxed whitespace-pre-line font-sans">
-                              {renderFormattedText(bloque.text, buscar)}
+                              {renderFormattedText(bloque.text || '', buscar)}
                             </p>
                           </div>
                         )
