@@ -2,6 +2,16 @@ import React, { useEffect, useState } from 'react'
 import { useParams, Link, useSearchParams } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import { ChevronLeft, List, ChevronRight, Bookmark } from 'lucide-react'
+import capitulosEditadosRaw from '../data/capitulos_editados.json'
+
+interface EditedChapter {
+  titulo: string
+  subtitulo: string
+  bloques: ChapterBlock[]
+}
+
+const capitulosEditados = capitulosEditadosRaw as Record<string, EditedChapter>
+
 
 interface Tomo {
   id: string
@@ -260,6 +270,8 @@ export default function TomoView() {
   const [loading, setLoading] = useState(true)
   
   const [scrollToSectionText, setScrollToSectionText] = useState<string | null>(null)
+  const [viewMode, setViewMode] = useState<'original' | 'edited'>('original')
+
 
   useEffect(() => {
     if (chapters.length > 0 && buscar) {
@@ -403,6 +415,20 @@ export default function TomoView() {
   }
 
   const activeChapter = activeChapterIndex >= 0 ? chapters[activeChapterIndex] : null
+  const activeChapterKey = activeChapter ? `${tomo.numero}-${activeChapter.orden}` : ''
+  const hasEditedVersion = !!capitulosEditados[activeChapterKey]
+
+  const currentChapterTitle = (viewMode === 'edited' && hasEditedVersion)
+    ? capitulosEditados[activeChapterKey].titulo
+    : (activeChapter ? activeChapter.titulo : '')
+
+  const currentChapterSubtitle = (viewMode === 'edited' && hasEditedVersion)
+    ? capitulosEditados[activeChapterKey].subtitulo
+    : (activeChapter ? activeChapter.subtitulo : '')
+
+  const currentChapterBlocks = (viewMode === 'edited' && hasEditedVersion)
+    ? capitulosEditados[activeChapterKey].bloques
+    : (activeChapter ? activeChapter.bloques : [])
 
   const themeColors: Record<string, string> = {
     amber: 'border-amber-500/30 text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 focus:border-amber-500',
@@ -415,8 +441,12 @@ export default function TomoView() {
   const activeThemeClass = themeColors[tomo.color_theme] || themeColors.amber
 
   const getChapterSections = (cap: Chapter) => {
-    return cap.bloques
-      ? cap.bloques.filter(b => b.type === 'titulo' && b.text).map(b => b.text as string)
+    const key = `${tomo.numero}-${cap.orden}`
+    const blocks = (viewMode === 'edited' && capitulosEditados[key])
+      ? capitulosEditados[key].bloques
+      : cap.bloques
+    return blocks
+      ? blocks.filter(b => b.type === 'titulo' && b.text).map(b => b.text as string)
       : []
   }
 
@@ -593,12 +623,41 @@ export default function TomoView() {
             {activeChapter ? (
               <article className="space-y-6">
                 {/* Encabezado del Capítulo */}
-                <div className="space-y-2 border-b border-white/5 pb-6">
-                  <span className="text-xs font-bold text-amber-500 tracking-wide uppercase">
-                    Lectura del Capítulo {activeChapter.orden}
-                  </span>
+                <div className="space-y-4 border-b border-white/5 pb-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <span className="text-xs font-bold text-amber-500 tracking-wide uppercase">
+                      Lectura del Capítulo {activeChapter.orden}
+                    </span>
+                    
+                    {/* Toggle de versión original vs editada */}
+                    {hasEditedVersion && (
+                      <div className="flex bg-gray-950/60 p-1 rounded-xl border border-white/5 self-start sm:self-auto shadow-inner">
+                        <button
+                          onClick={() => setViewMode('original')}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                            viewMode === 'original'
+                              ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                              : 'text-gray-400 hover:text-white border border-transparent'
+                          }`}
+                        >
+                          Versión Original
+                        </button>
+                        <button
+                          onClick={() => setViewMode('edited')}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                            viewMode === 'edited'
+                              ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                              : 'text-gray-400 hover:text-white border border-transparent'
+                          }`}
+                        >
+                          Versión Editada (Piloto)
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  
                   <h2 className="text-2xl sm:text-3xl font-extrabold font-display text-white m-0">
-                    {renderFormattedText(activeChapter.subtitulo || activeChapter.titulo, buscar)}
+                    {renderFormattedText(currentChapterSubtitle || currentChapterTitle, buscar)}
                   </h2>
                 </div>
 
@@ -624,8 +683,8 @@ export default function TomoView() {
 
                 {/* Bloques de contenido */}
                 <div className="space-y-6 text-gray-300 leading-relaxed font-sans text-base">
-                  {activeChapter.bloques && activeChapter.bloques.length > 0 ? (
-                    activeChapter.bloques.map((bloque, index) => {
+                  {currentChapterBlocks && currentChapterBlocks.length > 0 ? (
+                    currentChapterBlocks.map((bloque, index) => {
                       if (bloque.type === 'titulo') {
                         return (
                           <h3 
