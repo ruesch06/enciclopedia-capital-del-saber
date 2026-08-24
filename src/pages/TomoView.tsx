@@ -322,14 +322,104 @@ const Tomo5Certificate: React.FC<{
   studentName: string
   setStudentName: (name: string) => void
 }> = ({ xp, currentRank, studentName, setStudentName }) => {
+
   const handlePrint = () => {
-    window.print()
+    const name = studentName.trim() || "[ TU NOMBRE AQUÍ ]"
+    const win = window.open('', '_blank', 'width=900,height=700')
+    if (!win) return
+    win.document.write(`<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Diploma — ${name}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;600;700;900&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #fff;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 30px;
+    }
+    .diploma {
+      width: 700px;
+      border: 8px double #92400e;
+      padding: 60px 80px;
+      text-align: center;
+      position: relative;
+      background: #fff;
+    }
+    .corner { position: absolute; width: 36px; height: 36px; }
+    .tl { top: 12px; left: 12px; border-top: 3px solid #b45309; border-left: 3px solid #b45309; }
+    .tr { top: 12px; right: 12px; border-top: 3px solid #b45309; border-right: 3px solid #b45309; }
+    .bl { bottom: 12px; left: 12px; border-bottom: 3px solid #b45309; border-left: 3px solid #b45309; }
+    .br { bottom: 12px; right: 12px; border-bottom: 3px solid #b45309; border-right: 3px solid #b45309; }
+    .trophy { font-size: 52px; margin-bottom: 18px; }
+    .badge { font-size: 11px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: #92400e; margin-bottom: 6px; }
+    .main-title { font-size: 26px; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; color: #1a1a1a; margin-bottom: 24px; }
+    .intro { font-size: 13px; color: #444; font-style: italic; margin-bottom: 24px; }
+    .name-block { border-bottom: 2px dashed #92400e; padding-bottom: 20px; margin-bottom: 24px; }
+    .name { font-family: 'Playfair Display', serif; font-size: 44px; font-weight: 700; color: #1a1a1a; letter-spacing: 0.02em; }
+    .body-text { font-size: 13px; line-height: 1.8; color: #333; max-width: 460px; margin: 0 auto 28px; }
+    .org { font-weight: 900; display: block; margin-top: 6px; color: #1a1a1a; }
+    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; border-top: 1px solid #ccc; padding-top: 20px; margin-bottom: 32px; text-align: left; }
+    .stat-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2em; color: #92400e; display: block; margin-bottom: 3px; }
+    .stat-value { font-size: 13px; font-weight: 700; text-transform: uppercase; color: #1a1a1a; }
+    .footer { font-size: 10px; text-transform: uppercase; letter-spacing: 0.25em; color: #666; }
+    @media print {
+      body { padding: 0; min-height: auto; }
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="diploma">
+    <div class="corner tl"></div>
+    <div class="corner tr"></div>
+    <div class="corner bl"></div>
+    <div class="corner br"></div>
+    <div class="trophy">🏆</div>
+    <div class="badge">Reconocimiento Oficial — La Gran Enciclopedia de Córdoba</div>
+    <div class="main-title">Diploma del Guardián del Saber</div>
+    <p class="intro">Se otorga el presente reconocimiento y título de honor a:</p>
+    <div class="name-block">
+      <div class="name">${name}</div>
+    </div>
+    <p class="body-text">
+      Por haber completado exitosamente todas las Misiones de Sabiduría de la
+      <span class="org">GRAN ENCICLOPEDIA DE CÓRDOBA</span>
+      demostrando excelencia, curiosidad por el patrimonio y amor por nuestra ciudad.
+    </p>
+    <div class="stats">
+      <div>
+        <span class="stat-label">Rango Obtenido</span>
+        <span class="stat-value">${currentRank}</span>
+      </div>
+      <div>
+        <span class="stat-label">Experiencia Total</span>
+        <span class="stat-value">${xp} Puntos XP</span>
+      </div>
+    </div>
+    <div class="footer">Comité de Córdoba Capital del Saber</div>
+  </div>
+  <script>
+    window.onload = function() {
+      setTimeout(function() { window.print(); }, 400);
+    };
+  </script>
+</body>
+</html>`)
+    win.document.close()
   }
 
   return (
-    <div className="space-y-8 print:p-0">
-      {/* Entrada del nombre (oculto en la impresión) */}
-      <div className="bg-gray-950/40 border border-white/10 rounded-2xl p-6 space-y-4 print:hidden">
+    <div className="space-y-8">
+      {/* Entrada del nombre */}
+      <div className="bg-gray-950/40 border border-white/10 rounded-2xl p-6 space-y-4">
         <label className="block text-xs font-bold text-amber-400 uppercase tracking-widest">
           Ingresá tu nombre y apellido para el Diploma Oficial:
         </label>
@@ -340,90 +430,70 @@ const Tomo5Certificate: React.FC<{
           className="w-full bg-gray-950 border border-amber-500/30 rounded-xl px-4 py-3 text-white text-center text-lg placeholder-gray-600 focus:outline-none focus:border-amber-500 transition-colors"
           placeholder="Escribí tu nombre completo aquí..."
         />
-        <p className="text-xs text-gray-400">
-          Una vez ingresado tu nombre, hacé clic en el botón de abajo para imprimir o guardar como PDF.
-        </p>
       </div>
 
-      {/* Tarjeta del Diploma */}
-      <div 
-        id="diploma-card"
-        className="relative bg-gradient-to-br from-amber-950/40 to-black border-4 border-double border-amber-500/50 rounded-3xl p-8 sm:p-12 text-center space-y-6 shadow-2xl max-w-2xl mx-auto overflow-hidden print:bg-white print:text-black print:border-black print:rounded-none print:shadow-none print:border-4 print:border-double print:max-w-full print:p-16 print:my-0"
-      >
-        {/* Fondo decorativo de esquinas para pantalla */}
-        <div className="absolute top-0 left-0 w-16 h-16 border-t-4 border-l-4 border-amber-500/20 rounded-tl-xl print:hidden"></div>
-        <div className="absolute top-0 right-0 w-16 h-16 border-t-4 border-r-4 border-amber-500/20 rounded-tr-xl print:hidden"></div>
-        <div className="absolute bottom-0 left-0 w-16 h-16 border-b-4 border-l-4 border-amber-500/20 rounded-bl-xl print:hidden"></div>
-        <div className="absolute bottom-0 right-0 w-16 h-16 border-b-4 border-r-4 border-amber-500/20 rounded-br-xl print:hidden"></div>
+      {/* Vista previa del Diploma */}
+      <div className="relative bg-gradient-to-br from-amber-950/30 to-gray-950 border-4 border-double border-amber-500/50 rounded-3xl p-8 sm:p-12 text-center space-y-6 shadow-2xl max-w-2xl mx-auto overflow-hidden">
+        <div className="absolute top-3 left-3 w-9 h-9 border-t-2 border-l-2 border-amber-500/40 rounded-tl-lg"></div>
+        <div className="absolute top-3 right-3 w-9 h-9 border-t-2 border-r-2 border-amber-500/40 rounded-tr-lg"></div>
+        <div className="absolute bottom-3 left-3 w-9 h-9 border-b-2 border-l-2 border-amber-500/40 rounded-bl-lg"></div>
+        <div className="absolute bottom-3 right-3 w-9 h-9 border-b-2 border-r-2 border-amber-500/40 rounded-br-lg"></div>
 
-        {/* Medalla o Escudo */}
-        <div className="flex justify-center">
-          <div className="w-16 h-16 bg-amber-500/10 rounded-full border border-amber-500/40 flex items-center justify-center text-2xl print:border-black print:bg-gray-100">
-            🏆
-          </div>
-        </div>
+        <div className="text-5xl">🏆</div>
 
-        <div className="space-y-2">
-          <span className="text-[10px] sm:text-xs font-bold text-amber-500 tracking-[0.2em] uppercase block print:text-black">
+        <div className="space-y-1">
+          <span className="text-[10px] font-bold text-amber-500 tracking-[0.25em] uppercase block">
             Reconocimiento Oficial
           </span>
-          <h2 className="text-xl sm:text-2xl font-extrabold font-display text-white uppercase tracking-wider print:text-black">
+          <h2 className="text-xl sm:text-2xl font-extrabold font-display text-white uppercase tracking-wider">
             Diploma del Guardián del Saber
           </h2>
         </div>
 
-        <p className="text-xs sm:text-sm text-gray-300 italic max-w-md mx-auto print:text-black">
-          Se otorga el presente reconocimiento y título de honor a:
-        </p>
+        <p className="text-xs text-gray-400 italic">Se otorga el presente reconocimiento y título de honor a:</p>
 
-        {/* Nombre del Estudiante */}
-        <div className="py-4 border-b-2 border-dashed border-amber-500/20 max-w-lg mx-auto print:border-black">
-          <h3 className="text-2xl sm:text-4xl font-extrabold text-amber-400 font-serif tracking-wide underline decoration-amber-500/30 print:text-black">
+        <div className="py-4 border-b-2 border-dashed border-amber-500/30">
+          <h3 className="text-2xl sm:text-4xl font-extrabold text-amber-400 tracking-wide">
             {studentName.trim() || "[ TU NOMBRE AQUÍ ]"}
           </h3>
         </div>
 
-        <p className="text-xs sm:text-sm text-gray-300 max-w-md mx-auto leading-relaxed print:text-black">
-          Por haber completado exitosamente todas las misiones de sabiduría de la 
-          <strong className="text-white block mt-1 not-italic print:text-black">GRAN ENCICLOPEDIA DE CÓRDOBA</strong>
+        <p className="text-xs sm:text-sm text-gray-300 max-w-md mx-auto leading-relaxed">
+          Por haber completado exitosamente todas las misiones de sabiduría de la{' '}
+          <strong className="text-white">GRAN ENCICLOPEDIA DE CÓRDOBA</strong>,{' '}
           demostrando excelencia, curiosidad por el patrimonio y amor por nuestra ciudad.
         </p>
 
-        <div className="grid grid-cols-2 gap-4 pt-6 text-left max-w-md mx-auto border-t border-white/5 print:border-black print:text-black">
+        <div className="grid grid-cols-2 gap-4 pt-5 text-left max-w-md mx-auto border-t border-white/10">
           <div>
-            <span className="text-[9px] font-bold text-amber-500 tracking-wider uppercase block print:text-black">
-              Rango Obtenido
-            </span>
-            <span className="text-xs sm:text-sm font-bold text-white uppercase print:text-black">
-              {currentRank}
-            </span>
+            <span className="text-[9px] font-bold text-amber-500 uppercase tracking-wider block">Rango Obtenido</span>
+            <span className="text-xs font-bold text-white uppercase">{currentRank}</span>
           </div>
           <div>
-            <span className="text-[9px] font-bold text-amber-500 tracking-wider uppercase block print:text-black">
-              Experiencia Total
-            </span>
-            <span className="text-xs sm:text-sm font-bold text-white print:text-black">
-              {xp} Puntos XP
-            </span>
+            <span className="text-[9px] font-bold text-amber-500 uppercase tracking-wider block">Experiencia Total</span>
+            <span className="text-xs font-bold text-white">{xp} Puntos XP</span>
           </div>
         </div>
 
-        <div className="pt-8 text-center text-[10px] text-gray-500 uppercase tracking-widest print:text-black">
-          <span>Comité de Córdoba Capital del Saber</span>
+        <div className="text-[10px] text-gray-600 uppercase tracking-widest pt-4">
+          Comité de Córdoba Capital del Saber
         </div>
       </div>
 
       {/* Botón de impresión */}
-      <div className="flex justify-center pt-4 print:hidden">
+      <div className="flex justify-center">
         <button
           onClick={handlePrint}
           disabled={!studentName.trim()}
-          className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold text-sm tracking-wider uppercase rounded-xl shadow-lg hover:shadow-amber-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+          className="px-8 py-3 bg-amber-500 hover:bg-amber-400 text-black font-bold text-sm tracking-wider uppercase rounded-xl shadow-lg disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-2"
         >
           <span>🖨️</span>
-          <span>Descargar o Imprimir Diploma</span>
+          <span>Imprimir / Guardar como PDF</span>
         </button>
       </div>
+      {!studentName.trim() && (
+        <p className="text-center text-xs text-gray-500">Ingresá tu nombre para habilitar el diploma.</p>
+      )}
     </div>
   )
 }
