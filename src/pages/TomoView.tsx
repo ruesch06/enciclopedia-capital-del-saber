@@ -255,6 +255,179 @@ function ImageFrame({ src, alt, caption }: { src: string; alt: string; caption?:
   )
 }
 
+const Tomo5Scoreboard: React.FC<{
+  xp: number
+  currentRank: string
+  rankCls: string
+}> = ({ xp, currentRank, rankCls }) => {
+  return (
+    <div className="space-y-8">
+      {/* Círculo de progreso grande */}
+      <div className="bg-gray-950/40 border border-white/10 rounded-2xl p-6 text-center space-y-4">
+        <h3 className="text-lg font-bold text-white uppercase tracking-wider">Tu Experiencia Acumulada</h3>
+        <div className="inline-flex flex-col items-center justify-center p-6 bg-amber-500/10 border border-amber-500/30 rounded-full w-40 h-40 shadow-inner mx-auto">
+          <span className="text-3xl font-extrabold text-amber-400">{xp}</span>
+          <span className="text-[10px] text-amber-500 uppercase tracking-widest font-bold">Puntos XP</span>
+        </div>
+        <p className="text-sm text-gray-300">
+          Tu rango actual es: <strong className={rankCls}>{currentRank}</strong>
+        </p>
+      </div>
+
+      {/* Rango cards */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className={`p-4 rounded-xl border transition-all ${xp >= 3500 ? 'border-amber-500/50 bg-amber-500/10 shadow-lg shadow-amber-500/5' : 'border-white/5 bg-white/5 opacity-50'}`}>
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-xs font-bold text-amber-400">3.500 a 4.000 XP</span>
+            {xp >= 3500 && <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-500 text-black uppercase tracking-wider">Desbloqueado</span>}
+          </div>
+          <h4 className="text-sm font-bold text-white">Gran Máster y Guardián</h4>
+          <p className="text-xs text-gray-400 mt-1">El rango máximo. Eres el protector oficial de la memoria de la ciudad.</p>
+        </div>
+
+        <div className={`p-4 rounded-xl border transition-all ${xp >= 2500 && xp < 3500 ? 'border-blue-500/50 bg-blue-500/10 shadow-lg' : xp >= 3500 ? 'border-green-500/20 bg-green-500/5 opacity-70' : 'border-white/5 bg-white/5 opacity-50'}`}>
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-xs font-bold text-blue-400">2.500 a 3.400 XP</span>
+            {xp >= 2500 && xp < 3500 && <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-blue-500 text-white uppercase tracking-wider">Desbloqueado</span>}
+          </div>
+          <h4 className="text-sm font-bold text-white">Especialista e Investigador</h4>
+          <p className="text-xs text-gray-400 mt-1">Has demostrado una comprensión sobresaliente del patrimonio local.</p>
+        </div>
+
+        <div className={`p-4 rounded-xl border transition-all ${xp >= 1500 && xp < 2500 ? 'border-emerald-500/50 bg-emerald-500/10 shadow-lg' : xp >= 2500 ? 'border-green-500/20 bg-green-500/5 opacity-70' : 'border-white/5 bg-white/5 opacity-50'}`}>
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-xs font-bold text-emerald-400">1.500 a 2.400 XP</span>
+            {xp >= 1500 && xp < 2500 && <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500 text-black uppercase tracking-wider">Desbloqueado</span>}
+          </div>
+          <h4 className="text-sm font-bold text-white">Explorador Urbanista</h4>
+          <p className="text-xs text-gray-400 mt-1">Vas por muy buen camino. Sigue explorando para conocer más secretos.</p>
+        </div>
+
+        <div className={`p-4 rounded-xl border transition-all ${xp < 1500 ? 'border-gray-500 bg-gray-500/10' : 'border-green-500/20 bg-green-500/5 opacity-60'}`}>
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-xs font-bold text-gray-400">Menos de 1.500 XP</span>
+            {xp < 1500 && <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-gray-500 text-white uppercase tracking-wider">Activo</span>}
+          </div>
+          <h4 className="text-sm font-bold text-white">Aprendiz del Patrimonio</h4>
+          <p className="text-xs text-gray-400 mt-1">Estás comenzando tu viaje. Revisa las pistas de las preguntas para subir tu puntaje.</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const Tomo5Certificate: React.FC<{
+  xp: number
+  currentRank: string
+  studentName: string
+  setStudentName: (name: string) => void
+}> = ({ xp, currentRank, studentName, setStudentName }) => {
+  const handlePrint = () => {
+    window.print()
+  }
+
+  return (
+    <div className="space-y-8 print:p-0">
+      {/* Entrada del nombre (oculto en la impresión) */}
+      <div className="bg-gray-950/40 border border-white/10 rounded-2xl p-6 space-y-4 print:hidden">
+        <label className="block text-xs font-bold text-amber-400 uppercase tracking-widest">
+          Ingresá tu nombre y apellido para el Diploma Oficial:
+        </label>
+        <input
+          type="text"
+          value={studentName}
+          onChange={(e) => setStudentName(e.target.value)}
+          className="w-full bg-gray-950 border border-amber-500/30 rounded-xl px-4 py-3 text-white text-center text-lg placeholder-gray-600 focus:outline-none focus:border-amber-500 transition-colors"
+          placeholder="Escribí tu nombre completo aquí..."
+        />
+        <p className="text-xs text-gray-400">
+          Una vez ingresado tu nombre, hacé clic en el botón de abajo para imprimir o guardar como PDF.
+        </p>
+      </div>
+
+      {/* Tarjeta del Diploma */}
+      <div 
+        id="diploma-card"
+        className="relative bg-gradient-to-br from-amber-950/40 to-black border-4 border-double border-amber-500/50 rounded-3xl p-8 sm:p-12 text-center space-y-6 shadow-2xl max-w-2xl mx-auto overflow-hidden print:bg-white print:text-black print:border-black print:rounded-none print:shadow-none print:border-4 print:border-double print:max-w-full print:p-16 print:my-0"
+      >
+        {/* Fondo decorativo de esquinas para pantalla */}
+        <div className="absolute top-0 left-0 w-16 h-16 border-t-4 border-l-4 border-amber-500/20 rounded-tl-xl print:hidden"></div>
+        <div className="absolute top-0 right-0 w-16 h-16 border-t-4 border-r-4 border-amber-500/20 rounded-tr-xl print:hidden"></div>
+        <div className="absolute bottom-0 left-0 w-16 h-16 border-b-4 border-l-4 border-amber-500/20 rounded-bl-xl print:hidden"></div>
+        <div className="absolute bottom-0 right-0 w-16 h-16 border-b-4 border-r-4 border-amber-500/20 rounded-br-xl print:hidden"></div>
+
+        {/* Medalla o Escudo */}
+        <div className="flex justify-center">
+          <div className="w-16 h-16 bg-amber-500/10 rounded-full border border-amber-500/40 flex items-center justify-center text-2xl print:border-black print:bg-gray-100">
+            🏆
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <span className="text-[10px] sm:text-xs font-bold text-amber-500 tracking-[0.2em] uppercase block print:text-black">
+            Reconocimiento Oficial
+          </span>
+          <h2 className="text-xl sm:text-2xl font-extrabold font-display text-white uppercase tracking-wider print:text-black">
+            Diploma del Guardián del Saber
+          </h2>
+        </div>
+
+        <p className="text-xs sm:text-sm text-gray-300 italic max-w-md mx-auto print:text-black">
+          Se otorga el presente reconocimiento y título de honor a:
+        </p>
+
+        {/* Nombre del Estudiante */}
+        <div className="py-4 border-b-2 border-dashed border-amber-500/20 max-w-lg mx-auto print:border-black">
+          <h3 className="text-2xl sm:text-4xl font-extrabold text-amber-400 font-serif tracking-wide underline decoration-amber-500/30 print:text-black">
+            {studentName.trim() || "[ TU NOMBRE AQUÍ ]"}
+          </h3>
+        </div>
+
+        <p className="text-xs sm:text-sm text-gray-300 max-w-md mx-auto leading-relaxed print:text-black">
+          Por haber completado exitosamente todas las misiones de sabiduría de la 
+          <strong className="text-white block mt-1 not-italic print:text-black">GRAN ENCICLOPEDIA DE CÓRDOBA</strong>
+          demostrando excelencia, curiosidad por el patrimonio y amor por nuestra ciudad.
+        </p>
+
+        <div className="grid grid-cols-2 gap-4 pt-6 text-left max-w-md mx-auto border-t border-white/5 print:border-black print:text-black">
+          <div>
+            <span className="text-[9px] font-bold text-amber-500 tracking-wider uppercase block print:text-black">
+              Rango Obtenido
+            </span>
+            <span className="text-xs sm:text-sm font-bold text-white uppercase print:text-black">
+              {currentRank}
+            </span>
+          </div>
+          <div>
+            <span className="text-[9px] font-bold text-amber-500 tracking-wider uppercase block print:text-black">
+              Experiencia Total
+            </span>
+            <span className="text-xs sm:text-sm font-bold text-white print:text-black">
+              {xp} Puntos XP
+            </span>
+          </div>
+        </div>
+
+        <div className="pt-8 text-center text-[10px] text-gray-500 uppercase tracking-widest print:text-black">
+          <span>Comité de Córdoba Capital del Saber</span>
+        </div>
+      </div>
+
+      {/* Botón de impresión */}
+      <div className="flex justify-center pt-4 print:hidden">
+        <button
+          onClick={handlePrint}
+          disabled={!studentName.trim()}
+          className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black font-bold text-sm tracking-wider uppercase rounded-xl shadow-lg hover:shadow-amber-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+        >
+          <span>🖨️</span>
+          <span>Descargar o Imprimir Diploma</span>
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export default function TomoView() {
   const { id } = useParams<{ id: string }>()
   const tomoNumber = parseInt(id || '1')
@@ -268,6 +441,7 @@ export default function TomoView() {
   
   const [scrollToSectionText, setScrollToSectionText] = useState<string | null>(null)
   const [questionStates, setQuestionStates] = useState<Record<string, {selected: string | null, revealed: boolean}>>({})
+  const [studentName, setStudentName] = useState("")
 
   const getQState = (key: string) => questionStates[key] || {selected: null, revealed: false}
   const selectOpt = (key: string, letter: string) =>
@@ -415,6 +589,38 @@ export default function TomoView() {
     }
 
     return applyBold(text)
+  }
+
+  const calculateTotalXP = () => {
+    let total = 0
+    chapters.forEach((cap, capIdx) => {
+      if (cap.bloques) {
+        cap.bloques.forEach((b, bIdx) => {
+          if (b.type === 'pregunta') {
+            const key = `${capIdx}-${bIdx}`
+            const state = questionStates[key]
+            if (state && state.revealed && state.selected === b.respuesta_correcta) {
+              total += b.xp || 100
+            }
+          }
+        })
+      }
+    })
+    return total
+  }
+
+  const totalXP = calculateTotalXP()
+  let currentRank = "APRENDIZ DEL PATRIMONIO CORDOBÉS"
+  let rankCls = "text-gray-400 font-semibold"
+  if (totalXP >= 3500) {
+    currentRank = "GRAN MÁSTER PATRIMONIAL Y GUARDIÁN DE CÓRDOBA"
+    rankCls = "text-amber-400 font-extrabold shadow-amber-500/10"
+  } else if (totalXP >= 2500) {
+    currentRank = "ESPECIALISTA E INVESTIGADOR DE LA CIUDAD"
+    rankCls = "text-blue-400 font-bold"
+  } else if (totalXP >= 1500) {
+    currentRank = "EXPLORADOR URBANISTA EN DESARROLLO"
+    rankCls = "text-emerald-400 font-semibold"
   }
 
   const activeChapter = activeChapterIndex >= 0 ? chapters[activeChapterIndex] : null
@@ -638,8 +844,12 @@ export default function TomoView() {
                 )}
 
                 {/* Bloques de contenido */}
-                <div className="space-y-6 text-gray-300 leading-relaxed font-sans text-base">
-                  {activeChapter.bloques && activeChapter.bloques.length > 0 ? (
+                <div className="space-y-6 text-gray-300 leading-relaxed font-sans text-base print:p-0">
+                  {tomo.numero === 5 && activeChapter.orden === 8 ? (
+                    <Tomo5Scoreboard xp={totalXP} currentRank={currentRank} rankCls={rankCls} />
+                  ) : tomo.numero === 5 && activeChapter.orden === 9 ? (
+                    <Tomo5Certificate xp={totalXP} currentRank={currentRank} studentName={studentName} setStudentName={setStudentName} />
+                  ) : activeChapter.bloques && activeChapter.bloques.length > 0 ? (
                     activeChapter.bloques.map((bloque, index) => {
 
                       if (bloque.type === 'titulo') {
